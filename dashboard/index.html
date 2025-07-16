@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+        }
+        .header {
+            background-color: #1f1f1f;
+            padding: 1rem;
+            border-bottom: 1px solid #333;
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header d-flex justify-content-between align-items-center">
+        <div class="logo">Dashboard</div>
+        <div>
+            <a href="/dashboard/settings" class="btn btn-secondary">Settings</a>
+            <a href="/dashboard/orders" class="btn btn-secondary">Orders</a>
+            <button class="btn btn-primary">Upload</button>
+        </div>
+    </header>
+
+    <main class="container mt-4">
+        <div class="row" id="pictures-grid">
+            <!-- Pictures will be loaded here -->
+        </div>
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function() {
+            const pictures = [
+                {
+                    "name": "Artwork 1",
+                    "description": "Description for artwork 1.",
+                    "price": 1000,
+                    "image": "https://via.placeholder.com/400x400.png?text=Artwork+1"
+                },
+                {
+                    "name": "Artwork 2",
+                    "description": "Description for artwork 2.",
+                    "price": 1500,
+                    "image": "https://via.placeholder.com/400x400.png?text=Artwork+2"
+                },
+                {
+                    "name": "Artwork 3",
+                    "description": "Description for artwork 3.",
+                    "price": 1200,
+                    "image": "https://via.placeholder.com/400x400.png?text=Artwork+3"
+                },
+                {
+                    "name": "Artwork 4",
+                    "description": "Description for artwork 4.",
+                    "price": 2000,
+                    "image": "https://via.placeholder.com/400x400.png?text=Artwork+4"
+                },
+                {
+                    "name": "Artwork 5",
+                    "description": "Description for artwork 5.",
+                    "price": 1800,
+                    "image": "https://via.placeholder.com/400x400.png?text=Artwork+5"
+                },
+                {
+                    "name": "Artwork 6",
+                    "description": "Description for artwork 6.",
+                    "price": 2500,
+                    "image": "https://via.placeholder.com/400x400.png?text=Artwork+6"
+                }
+            ];
+
+            const picturesGrid = $('#pictures-grid');
+            pictures.forEach(pic => {
+                const pictureCard = `
+                    <div class="col-md-4 mb-4">
+                        <div class="card bg-dark text-white position-relative">
+                            <img src="${pic.image}" class="card-img-top" alt="${pic.name}">
+                            <div class="card-body">
+                                <h5 class="card-title">${pic.name}</h5>
+                                <p class="card-text">${pic.description}</p>
+                            </div>
+                            <div class="position-absolute top-0 end-0 p-2">
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Actions
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuButton">
+                                        <li><a class="dropdown-item" href="#">Delete</a></li>
+                                        <li><a class="dropdown-item" href="#">Edit</a></li>
+                                        <li><a class="dropdown-item" href="#">Sell to</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                picturesGrid.append(pictureCard);
+            });
+        });
+    </script>
+</body>
+</html>
