@@ -24,7 +24,15 @@
 <body>
 
     <header class="header d-flex justify-content-between align-items-center">
-        <div class="logo">Dashboard</div>
+        <div class="logo">
+            <a href="/" class="text-white text-decoration-none">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-house-door-fill" viewBox="0 0 16 16">
+                    <path d="M6.5 14.5v-3.5h3v3.5h-3z"/>
+                    <path d="M2 1a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7.293l-6-6-6 6V1zm11 8.293V15a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-5.293l6-6 6 6z"/>
+                </svg>
+                Dashboard
+            </a>
+        </div>
         <div>
             <a href="/dashboard/settings" class="btn btn-secondary">Settings</a>
             <a href="/dashboard/orders" class="btn btn-secondary">Orders</a>
@@ -32,7 +40,7 @@
         </div>
     </header>
 
-    <main class="container mt-4">
+    <main class="container-fluid mt-4">
         <div class="row" id="pictures-grid">
             <!-- Pictures will be loaded here -->
         </div>
@@ -42,71 +50,34 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script>
         $(document).ready(function() {
-            const pictures = [
-                {
-                    "name": "Artwork 1",
-                    "description": "Description for artwork 1.",
-                    "price": 1000,
-                    "image": "https://via.placeholder.com/400x400.png?text=Artwork+1"
-                },
-                {
-                    "name": "Artwork 2",
-                    "description": "Description for artwork 2.",
-                    "price": 1500,
-                    "image": "https://via.placeholder.com/400x400.png?text=Artwork+2"
-                },
-                {
-                    "name": "Artwork 3",
-                    "description": "Description for artwork 3.",
-                    "price": 1200,
-                    "image": "https://via.placeholder.com/400x400.png?text=Artwork+3"
-                },
-                {
-                    "name": "Artwork 4",
-                    "description": "Description for artwork 4.",
-                    "price": 2000,
-                    "image": "https://via.placeholder.com/400x400.png?text=Artwork+4"
-                },
-                {
-                    "name": "Artwork 5",
-                    "description": "Description for artwork 5.",
-                    "price": 1800,
-                    "image": "https://via.placeholder.com/400x400.png?text=Artwork+5"
-                },
-                {
-                    "name": "Artwork 6",
-                    "description": "Description for artwork 6.",
-                    "price": 2500,
-                    "image": "https://via.placeholder.com/400x400.png?text=Artwork+6"
-                }
-            ];
-
-            const picturesGrid = $('#pictures-grid');
-            pictures.forEach(pic => {
-                const pictureCard = `
-                    <div class="col-md-4 mb-4">
-                        <div class="card bg-dark text-white position-relative">
-                            <img src="${pic.image}" class="card-img-top" alt="${pic.name}">
-                            <div class="card-body">
-                                <h5 class="card-title">${pic.name}</h5>
-                                <p class="card-text">${pic.description}</p>
-                            </div>
-                            <div class="position-absolute top-0 end-0 p-2">
-                                <div class="dropdown">
-                                    <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                                        Actions
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuButton">
-                                        <li><a class="dropdown-item" href="#">Delete</a></li>
-                                        <li><a class="dropdown-item" href="#">Edit</a></li>
-                                        <li><a class="dropdown-item" href="#">Sell to</a></li>
-                                    </ul>
+            $.getJSON('../data.json', function(data) {
+                const picturesGrid = $('#pictures-grid');
+                data.pictures.forEach(pic => {
+                    const pictureCard = `
+                        <div class="col-md-4 mb-4">
+                            <div class="card bg-dark text-white position-relative">
+                                <img src="${pic.image}" class="card-img-top" alt="${pic.name}">
+                                <div class="card-body">
+                                    <h5 class="card-title">${pic.name}</h5>
+                                    <p class="card-text">${pic.description}</p>
+                                </div>
+                                <div class="position-absolute top-0 end-0 p-2">
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                            Actions
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuButton">
+                                            <li><a class="dropdown-item" href="#">Delete</a></li>
+                                            <li><a class="dropdown-item" href="#">Edit</a></li>
+                                            <li><a class="dropdown-item" href="#">Sell to</a></li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                `;
-                picturesGrid.append(pictureCard);
+                    `;
+                    picturesGrid.append(pictureCard);
+                });
             });
         });
     </script>

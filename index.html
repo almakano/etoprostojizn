@@ -30,7 +30,9 @@
 <body>
 
     <header class="header d-flex justify-content-between align-items-center">
-        <div class="logo">Tatiana Tkach</div>
+        <div class="logo">
+            <img src="https://scontent-bos5-1.cdninstagram.com/v/t51.2885-15/497858652_18386543440139616_1099135169888589694_n.jpg?stp=dst-jpegr_e35_tt6&efg=eyJ2ZW5jb2RlX3RhZyI6IkZFRUQuaW1hZ2VfdXJsZ2VuLjE0NDB4MTQ0MC5oZHIuZjc1NzYxLmRlZmF1bHRfaW1hZ2UifQ&_nc_ht=scontent-bos5-1.cdninstagram.com&_nc_cat=100&_nc_oc=Q6cZ2QHh5u0j5znDyHv0f0UqZG4d2QeV1Y2Uk7Zr6owryaIcqplWzUF4I9t6wKZ4M5PBiEc&_nc_ohc=GUxtDQ2LShkQ7kNvwFNQA3E&_nc_gid=mpDTTA1cldksJILiKmUgwA&edm=AP4sbd4BAAAA&ccb=7-5&ig_cache_key=MzYzMzIwMzU2MTcwNjQyNzc0Mw%3D%3D.3-ccb7-5&oh=00_AfQD2PN-hfxuwwMLm24tD2SNF88qR0UXZ4QjheU_Ev4D1A&oe=687DC956&_nc_sid=7a9f4b" alt="Tatiana Tkach" style="height: 40px;">
+        </div>
         <div class="d-flex align-items-center">
             <div class="theme-toggler me-3">🌙</div>
             <div class="lang-switcher">
@@ -43,7 +45,7 @@
         </div>
     </header>
 
-    <main class="container mt-4">
+    <main class="container-fluid mt-4">
         <div class="row" id="pictures-grid">
             <!-- Pictures will be loaded here -->
         </div>
@@ -64,64 +66,24 @@
             });
 
             // Fetch and display pictures
-            const instagramUrl = 'https://www.instagram.com/tkach2t/';
-            // Please note: Scraping Instagram is against their terms of service.
-            // This is a placeholder and a proper solution would require using the official Instagram API.
-            // For demonstration purposes, I will use placeholder images.
-            const pictures = [
-                {
-                    "name": "Artwork 1",
-                    "description": "Description for artwork 1.",
-                    "price": 1000,
-                    "image": "https://via.placeholder.com/400x400.png?text=Artwork+1"
-                },
-                {
-                    "name": "Artwork 2",
-                    "description": "Description for artwork 2.",
-                    "price": 1500,
-                    "image": "https://via.placeholder.com/400x400.png?text=Artwork+2"
-                },
-                {
-                    "name": "Artwork 3",
-                    "description": "Description for artwork 3.",
-                    "price": 1200,
-                    "image": "https://via.placeholder.com/400x400.png?text=Artwork+3"
-                },
-                {
-                    "name": "Artwork 4",
-                    "description": "Description for artwork 4.",
-                    "price": 2000,
-                    "image": "https://via.placeholder.com/400x400.png?text=Artwork+4"
-                },
-                {
-                    "name": "Artwork 5",
-                    "description": "Description for artwork 5.",
-                    "price": 1800,
-                    "image": "https://via.placeholder.com/400x400.png?text=Artwork+5"
-                },
-                {
-                    "name": "Artwork 6",
-                    "description": "Description for artwork 6.",
-                    "price": 2500,
-                    "image": "https://via.placeholder.com/400x400.png?text=Artwork+6"
-                }
-            ];
-
-            const picturesGrid = $('#pictures-grid');
-            pictures.forEach(pic => {
-                const pictureCard = `
-                    <div class="col-md-4 mb-4">
-                        <div class="card bg-dark text-white">
-                            <img src="${pic.image}" class="card-img-top" alt="${pic.name}">
-                            <div class="card-body">
-                                <h5 class="card-title">${pic.name}</h5>
-                                <p class="card-text">${pic.description}</p>
-                                <a href="https://send.monobank.ua/jar/YOUR_JAR_ID" class="btn btn-primary">Donate ${pic.price} UAH</a>
+            $.getJSON('data.json', function(data) {
+                const picturesGrid = $('#pictures-grid');
+                const donationLink = data.settings.donation_link;
+                data.pictures.forEach(pic => {
+                    const pictureCard = `
+                        <div class="col-md-4 mb-4">
+                            <div class="card bg-dark text-white">
+                                <img src="${pic.image}" class="card-img-top" alt="${pic.name}">
+                                <div class="card-body">
+                                    <h5 class="card-title">${pic.name}</h5>
+                                    <p class="card-text">${pic.description}</p>
+                                    <a href="${donationLink}" class="btn btn-primary">Donate ${pic.price} UAH</a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                `;
-                picturesGrid.append(pictureCard);
+                    `;
+                    picturesGrid.append(pictureCard);
+                });
             });
         });
     </script>

@@ -1,0 +1,31 @@
+{
+    "settings": {
+        "donation_link": "https://send.monobank.ua/jar/YOUR_JAR_ID"
+    },
+    "pictures": [
+        {
+            "name": "Artwork 1",
+            "description": "Description for artwork 1.",
+            "price": 1000,
+            "image": "https://scontent-bos5-1.cdninstagram.com/v/t51.2885-15/505435567_18391262650139616_1575936507544813476_n.jpg?stp=dst-jpegr_e35_tt6&efg=eyJ2ZW5jb2RlX3RhZyI6IkZFRUQuaW1hZ2VfdXJsZ2VuLjE0NDB4MTkyMC5oZHIuZjc1NzYxLmRlZmF1bHRfaW1hZ2UifQ&_nc_ht=scontent-bos5-1.cdninstagram.com&_nc_cat=100&_nc_oc=Q6cZ2QHh5u0j5znDyHv0f0UqZG4d2QeV1Y2Uk7Zr6owryaIcqplWzUF4I9t6wKZ4M5PBiEc&_nc_ohc=1ZUhTCGOWFsQ7kNvwFJhZ9F&_nc_gid=mpDTTA1cldksJILiKmUgwA&edm=AP4sbd4BAAAA&ccb=7-5&ig_cache_key=MzY1OTE5OTA1MDAwNzcyMTY0Nw%3D%3D.3-ccb7-5&oh=00_AfQ5CWcqfyCRKS_DnLmrYoAwpybUOHG7vWhhMERMsqD7lw&oe=687DBD5F&_nc_sid=7a9f4b"
+        },
+        {
+            "name": "Artwork 2",
+            "description": "Description for artwork 2.",
+            "price": 1500,
+            "image": "https://scontent-bos5-1.cdninstagram.com/v/t51.29350-15/468291032_1723692475119254_1117235161077452962_n.webp?stp=dst-jpg_e35_tt6&efg=eyJ2ZW5jb2RlX3RhZyI6IkZFRUQuaW1hZ2VfdXJsZ2VuLjE0NDB4MTQ0MC5zZHIuZjI5MzUwLmRlZmF1bHRfaW1hZ2UifQ&_nc_ht=scontent-bos5-1.cdninstagram.com&_nc_cat=102&_nc_oc=Q6cZ2QHh5u0j5znDyHv0f0UqZG4d2QeV1Y2Uk7Zr6owryaIcqplWzUF4I9t6wKZ4M5PBiEc&_nc_ohc=lFS_6khtyccQ7kNvwG2z8Z_&_nc_gid=mpDTTA1cldksJILiKmUgwA&edm=AP4sbd4BAAAA&ccb=7-5&ig_cache_key=MzUwOTMxNzgwMjAxMDI1MDI4Mw%3D%3D.3-ccb7-5&oh=00_AfS07IwN-_Ou1iW6dFvAUDdeg37pCb570q5PmfJv5iRKSw&oe=687DC07E&_nc_sid=7a9f4b"
+        },
+        {
+            "name": "Artwork 3",
+            "description": "Description for artwork 3.",
+            "price": 1200,
+            "image": "https://scontent-bos5-1.cdninstagram.com/v/t51.29350-15/341886836_502860255243573_2326134700194506775_n.webp?stp=dst-jpg_e35_tt6&efg=eyJ2ZW5jb2RlX3RhZyI6IkZFRUQuaW1hZ2VfdXJsZ2VuLjE0NDB4MTQ0MC5zZHIuZjI5MzUwLmRlZmF1bHRfaW1hZ2UifQ&_nc_ht=scontent-bos5-1.cdninstagram.com&_nc_cat=109&_nc_oc=Q6cZ2QHSOvUUULY8vDwtkNzglgJYD3gLyGF45-CFjFwg4JwFbwSVroSuyNQfVbDAHSpJWHs&_nc_ohc=Zj9sG0BLzEcQ7kNvwFHHC3E&_nc_gid=71_IVrZXK4MhCqWulsw0YA&edm=APoiHPcBAAAA&ccb=7-5&ig_cache_key=MzA4NTE2NDgzMjYxNzExNDA0NA%3D%3D.3-ccb7-5&oh=00_AfSYNGhODzdGQtaPrp3P7wdf8l_R0P82d_gI3JcNpVmdaw&oe=687DD845&_nc_sid=22de04"
+        },
+        {
+            "name": "Artwork 4",
+            "description": "Description for artwork 4.",
+            "price": 2000,
+            "image": "https://scontent-bos5-1.cdninstagram.com/v/t51.29350-15/340663353_216962090940803_6611643138390875549_n.webp?stp=dst-jpg_e35_tt6&efg=eyJ2ZW5jb2RlX3RhZyI6IkZFRUQuaW1hZ2VfdXJsZ2VuLjE0NDB4MTQ0MC5zZHIuZjI5MzUwLmRlZmF1bHRfaW1hZ2UifQ&_nc_ht=scontent-bos5-1.cdninstagram.com&_nc_cat=111&_nc_oc=Q6cZ2QHSOvUUULY8vDwtkNzglgJYD3gLyGF45-CFjFwg4JwFbwSVroSuyNQfVbDAHSpJWHs&_nc_ohc=Xm2TJ08sY9UQ7kNvwFMzbDo&_nc_gid=71_IVrZXK4MhCqWulsw0YA&edm=APoiHPcBAAAA&ccb=7-5&ig_cache_key=MzA3OTMxNTU5OTk4OTA5NTE5Nw%3D%3D.3-ccb7-5&oh=00_AfSrBhiFmnYfVdTf1McNB7IqaLRMZ2waTBxhe1jlwgC2AQ&oe=687DD46B&_nc_sid=22de04"
+        }
+    ]
+}
