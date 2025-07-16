@@ -4,6 +4,13 @@
     },
     "pictures": [
         {
+            "name": "Pions",
+            "description": "Beautiful pions",
+            "price": 2000,
+            "image": "https://raw.githubusercontent.com/almakano/etoprostojizn/main/upload/505435567_18391262650139616_1575936507544813476_n.jpg",
+            "createdAt": "2025-07-16T22:52:13.492Z"
+        },
+        {
             "name": "Artwork 1",
             "description": "Description for artwork 1.",
             "price": 1000,
