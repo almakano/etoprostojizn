@@ -36,7 +36,7 @@
         <div>
             <a href="/dashboard/settings" class="btn btn-secondary">Settings</a>
             <a href="/dashboard/orders" class="btn btn-secondary">Orders</a>
-            <button class="btn btn-primary">Upload</button>
+            <button class="btn btn-primary" id="upload-btn">Upload</button>
         </div>
     </header>
 
@@ -70,8 +70,9 @@
                             <input type="number" class="form-control" id="edit-price" required>
                         </div>
                         <div class="mb-3">
-                            <label for="edit-image" class="form-label">Image URL</label>
-                            <input type="text" class="form-control" id="edit-image" required>
+                            <label for="edit-image" class="form-label">Image</label>
+                            <input type="file" class="form-control" id="edit-image-file">
+                            <input type="hidden" id="edit-image">
                         </div>
                         <button type="submit" class="btn btn-primary">Save changes</button>
                     </form>
@@ -180,16 +181,53 @@
             $('#edit-form').on('submit', function(e) {
                 e.preventDefault();
                 const originalName = $('#edit-original-name').val();
+                const imageFile = $('#edit-image-file')[0].files[0];
+
+                if (imageFile) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const content = e.target.result.split(',')[1];
+                        uploadFile(imageFile.name, content)
+                            .then(response => {
+                                const imageUrl = response.content.download_url;
+                                savePicture(originalName, imageUrl);
+                            })
+                            .catch(() => alert('Error uploading image!'));
+                    };
+                    reader.readAsDataURL(imageFile);
+                } else {
+                    savePicture(originalName, $('#edit-image').val());
+                }
+            });
+
+            function savePicture(originalName, imageUrl) {
                 const updatedPicture = {
                     name: $('#edit-name').val(),
                     description: $('#edit-description').val(),
                     price: parseInt($('#edit-price').val(), 10),
-                    image: $('#edit-image').val()
+                    image: imageUrl,
+                    createdAt: originalName ? picturesData.pictures.find(p => p.name === originalName).createdAt : new Date().toISOString()
                 };
-                const pictureIndex = picturesData.pictures.findIndex(p => p.name === originalName);
-                picturesData.pictures[pictureIndex] = updatedPicture;
+
+                if (originalName) {
+                    const pictureIndex = picturesData.pictures.findIndex(p => p.name === originalName);
+                    picturesData.pictures[pictureIndex] = updatedPicture;
+                } else {
+                    picturesData.pictures.unshift(updatedPicture);
+                }
+
                 updateDataFile(picturesData);
                 $('#editModal').modal('hide');
+            }
+
+            $('#upload-btn').on('click', function() {
+                $('#edit-original-name').val('');
+                $('#edit-name').val('');
+                $('#edit-description').val('');
+                $('#edit-price').val('');
+                $('#edit-image').val('');
+                $('#editModalLabel').text('Upload Picture');
+                $('#editModal').modal('show');
             });
 
             $(document).on('click', '.sell-btn', function(e) {
@@ -202,11 +240,13 @@
             $('#sell-form').on('submit', function(e) {
                 e.preventDefault();
                 const pictureName = $('#sell-picture-name').val();
+                const picture = picturesData.pictures.find(p => p.name === pictureName);
                 const order = {
                     picture: pictureName,
                     customer: $('#sell-customer').val(),
                     price: parseInt($('#sell-price').val(), 10),
-                    date: $('#sell-date').val()
+                    date: $('#sell-date').val(),
+                    soldAt: new Date().toISOString()
                 };
                 if (!picturesData.orders) {
                     picturesData.orders = [];
@@ -249,6 +289,25 @@
                             alert('Error updating data!');
                         }
                     });
+                });
+            }
+
+            function uploadFile(name, content) {
+                const token = localStorage.getItem('github-pass');
+                const repo = 'almakano/etoprostojizn';
+                const path = `upload/${name}`;
+                const url = `https://api.github.com/repos/${repo}/contents/${path}`;
+
+                return $.ajax({
+                    url: url,
+                    type: 'PUT',
+                    headers: {
+                        'Authorization': `token ${token}`
+                    },
+                    data: JSON.stringify({
+                        message: `Upload ${name}`,
+                        content: content
+                    })
                 });
             }
         });
