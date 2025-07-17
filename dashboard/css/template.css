@@ -36,6 +36,12 @@ body.dark-mode .card {
     background-color: #212529;
     color: #ffffff;
 }
+
+@media (max-width: 767.98px) {
+    .offcanvas-start {
+        width: 70% !important;
+    }
+}
 .modal-content {
     background-color: #ffffff;
     color: #212529;
