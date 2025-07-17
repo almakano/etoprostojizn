@@ -34,7 +34,7 @@
             </a>
         </div>
         <div>
-            <button class="btn btn-info" id="import-btn">Import</button>
+            <button class="btn btn-info" id="import-btn">Import IG</button>
             <a href="/dashboard/settings" class="btn btn-secondary">Settings</a>
             <a href="/dashboard/orders" class="btn btn-secondary">Orders</a>
             <button class="btn btn-primary" id="upload-btn">Upload</button>
@@ -276,7 +276,11 @@
 
                 const url = "https://api.apify.com/v2/acts/apify~instagram-profile-scraper/run-sync-get-dataset-items";
                 const data = {
-                    "usernames": ["tkach2t"]
+                    "usernames": ["tkach2t"],
+                    "resultsLimit": 1000,
+                    "proxyConfiguration": {
+                        "useApifyProxy": true
+                    }
                 };
 
                 $.ajax({
@@ -290,17 +294,24 @@
                     success: function(data) {
                         mainData.timestamp = new Date().toISOString();
                         if (data && data.length > 0 && data[0].latestPosts) {
-                            const newPictures = data[0].latestPosts.map(item => ({
-                                name: item.caption ? item.caption.split('\n')[0] : `Artwork ${mainData.pictures.length + 1}`,
-                                description: item.caption || '',
-                                price: 0,
-                                image: item.displayUrl,
-                                createdAt: new Date(item.timestamp).toISOString(),
-                                timestamp: new Date().toISOString()
-                            }));
+                            const existingImages = new Set(mainData.pictures.map(p => p.image));
+                            const newPictures = data[0].latestPosts
+                                .filter(item => !existingImages.has(item.displayUrl))
+                                .map(item => ({
+                                    name: item.caption ? item.caption.split('\n')[0] : `Artwork ${mainData.pictures.length + 1}`,
+                                    description: item.caption || '',
+                                    price: 0,
+                                    image: item.displayUrl,
+                                    createdAt: new Date(item.timestamp).toISOString(),
+                                    timestamp: new Date().toISOString()
+                                }));
 
-                            mainData.pictures.unshift(...newPictures);
-                            updateDataFile(mainData);
+                            if (newPictures.length > 0) {
+                                mainData.pictures.unshift(...newPictures);
+                                updateDataFile(mainData);
+                            } else {
+                                alert('No new pictures found.');
+                            }
                         } else {
                             alert('No new pictures found.');
                         }
@@ -364,7 +375,7 @@
                         }),
                         success: function() {
                             alert('Data updated successfully!');
-                            renderPictures(picturesData.pictures);
+                            renderPictures(mainData.pictures);
                         },
                         error: function() {
                             alert('Error updating data!');
