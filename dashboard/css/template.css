@@ -27,6 +27,7 @@ body.dark-mode .header {
 }
 .sidebar {
     background-color: #f8f9fa;
+    height: 100vh;
 }
 body.dark-mode .sidebar {
     background-color: #212529;
@@ -45,10 +46,15 @@ body.dark-mode .card {
         width: 70% !important;
     }
     .sidebar.offcanvas-start:not(.show) {
-        width: 15px !important;
+        visibility: initial !important;
+        padding: 0 !important;
+        width: 10px !important;
         transform: translateX(0) !important;
     }
     .sidebar.offcanvas-start:not(.show) .nav-link {
+        display: none;
+    }
+    .sidebar.offcanvas-start:not(.show) .theme-toggler {
         display: none;
     }
 }
