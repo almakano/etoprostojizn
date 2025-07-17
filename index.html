@@ -5,27 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tatiana Tkach</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <style>
-        body {
-            background-color: #121212;
-            color: #ffffff;
-        }
-        .header {
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            background-color: #1f1f1f;
-            padding: 1rem;
-            border-bottom: 1px solid #333;
-        }
-        .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-        .theme-toggler, .lang-switcher {
-            cursor: pointer;
-        }
-    </style>
+    <link rel="stylesheet" href="/css/template.css">
 </head>
 <body>
 
@@ -70,14 +50,25 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script>
         $(document).ready(function() {
-            // Theme toggler
-            $('.theme-toggler').on('click', function() {
-                $('body').toggleClass('dark-mode');
-                if ($('body').hasClass('dark-mode')) {
-                    $(this).text('☀️');
+            // Theme switcher
+            function applyTheme(theme) {
+                if (theme === 'dark') {
+                    $('body').addClass('dark-mode');
+                    $('.theme-toggler').text('☀️');
                 } else {
-                    $(this).text('🌙');
+                    $('body').removeClass('dark-mode');
+                    $('.theme-toggler').text('🌙');
                 }
+            }
+
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            applyTheme(savedTheme);
+
+            $('.theme-toggler').on('click', function() {
+                const currentTheme = $('body').hasClass('dark-mode') ? 'dark' : 'light';
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                localStorage.setItem('theme', newTheme);
+                applyTheme(newTheme);
             });
 
             // Fetch and display pictures

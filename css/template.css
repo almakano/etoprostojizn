@@ -1,0 +1,35 @@
+body {
+    background-color: #f8f9fa;
+    color: #212529;
+}
+body.dark-mode {
+    background-color: #121212;
+    color: #ffffff;
+}
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: #ffffff;
+    padding: 1rem;
+    border-bottom: 1px solid #dee2e6;
+}
+body.dark-mode .header {
+    background-color: #1f1f1f;
+    border-bottom: 1px solid #333;
+}
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+.theme-toggler, .lang-switcher {
+    cursor: pointer;
+}
+.card {
+    background-color: #ffffff;
+    color: #212529;
+}
+body.dark-mode .card {
+    background-color: #212529;
+    color: #ffffff;
+}
