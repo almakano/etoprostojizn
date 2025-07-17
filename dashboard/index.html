@@ -274,24 +274,36 @@
                     }
                 }
 
-                const url = 'https://www.instagram.com/tkach2t';
-                const downloaderUrl = `https://api.apify.com/v2/acts/apify/instagram-profile-scraper/run-sync-get-dataset-items?token=${token}&profileUrls=${url}`;
+                const url = "https://api.apify.com/v2/acts/apify~instagram-profile-scraper/run-sync-get-dataset-items";
+                const data = {
+                    "usernames": ["tkach2t"]
+                };
 
-                $.getJSON(downloaderUrl, function(data) {
-                    picturesData.timestamp = new Date().toISOString();
-                    const newPictures = data.map(item => ({
-                        name: item.caption ? item.caption.split('\n')[0] : `Artwork ${picturesData.pictures.length + 1}`,
-                        description: item.caption || '',
-                        price: 0,
-                        image: item.displayUrl,
-                        createdAt: new Date(item.timestamp).toISOString(),
-                        timestamp: new Date().toISOString()
-                    }));
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    data: JSON.stringify(data),
+                    success: function(data) {
+                        picturesData.timestamp = new Date().toISOString();
+                        const newPictures = data.map(item => ({
+                            name: item.caption ? item.caption.split('\n')[0] : `Artwork ${picturesData.pictures.length + 1}`,
+                            description: item.caption || '',
+                            price: 0,
+                            image: item.displayUrl,
+                            createdAt: new Date(item.timestamp).toISOString(),
+                            timestamp: new Date().toISOString()
+                        }));
 
-                    picturesData.pictures.unshift(...newPictures);
-                    updateDataFile(picturesData);
-                }).fail(function() {
-                    alert('Error importing from Instagram!');
+                        picturesData.pictures.unshift(...newPictures);
+                        updateDataFile(picturesData);
+                    },
+                    error: function() {
+                        alert('Error importing from Instagram!');
+                    }
                 });
             });
 
