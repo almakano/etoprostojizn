@@ -28,3 +28,11 @@ body.dark-mode .header {
 body.dark-mode .sidebar {
     background-color: #212529;
 }
+.card {
+    background-color: #ffffff;
+    color: #212529;
+}
+body.dark-mode .card {
+    background-color: #212529;
+    color: #ffffff;
+}

@@ -33,3 +33,9 @@ body.dark-mode .card {
     background-color: #212529;
     color: #ffffff;
 }
+.header a {
+    color: #212529;
+}
+body.dark-mode .header a {
+    color: #ffffff;
+}
