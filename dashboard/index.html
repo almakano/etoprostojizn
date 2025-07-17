@@ -289,17 +289,21 @@
                     data: JSON.stringify(data),
                     success: function(data) {
                         picturesData.timestamp = new Date().toISOString();
-                        const newPictures = data.map(item => ({
-                            name: item.caption ? item.caption.split('\n')[0] : `Artwork ${picturesData.pictures.length + 1}`,
-                            description: item.caption || '',
-                            price: 0,
-                            image: item.displayUrl,
-                            createdAt: new Date(item.timestamp).toISOString(),
-                            timestamp: new Date().toISOString()
-                        }));
+                        if (data && data.length > 0 && data[0].latestPosts) {
+                            const newPictures = data[0].latestPosts.map(item => ({
+                                name: item.caption ? item.caption.split('\n')[0] : `Artwork ${picturesData.pictures.length + 1}`,
+                                description: item.caption || '',
+                                price: 0,
+                                image: item.displayUrl,
+                                createdAt: new Date(item.timestamp).toISOString(),
+                                timestamp: new Date().toISOString()
+                            }));
 
-                        picturesData.pictures.unshift(...newPictures);
-                        updateDataFile(picturesData);
+                            picturesData.pictures.unshift(...newPictures);
+                            updateDataFile(picturesData);
+                        } else {
+                            alert('No new pictures found.');
+                        }
                     },
                     error: function() {
                         alert('Error importing from Instagram!');
