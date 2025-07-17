@@ -123,11 +123,11 @@
                 window.location.href = '/login.html';
             }
 
-            let picturesData;
+            let mainData;
 
             $.getJSON(`../data.json?t=${new Date().getTime()}`, function(data) {
-                picturesData = data;
-                renderPictures(picturesData.pictures);
+                mainData = data;
+                renderPictures(mainData.pictures);
             });
 
             function renderPictures(pictures) {
@@ -165,15 +165,15 @@
                 e.preventDefault();
                 const pictureName = $(this).data('name');
                 if (confirm(`Are you sure you want to delete "${pictureName}"?`)) {
-                    picturesData.pictures = picturesData.pictures.filter(p => p.name !== pictureName);
-                    updateDataFile(picturesData);
+                    mainData.pictures = mainData.pictures.filter(p => p.name !== pictureName);
+                    updateDataFile(mainData);
                 }
             });
 
             $(document).on('click', '.edit-btn', function(e) {
                 e.preventDefault();
                 const pictureName = $(this).data('name');
-                const picture = picturesData.pictures.find(p => p.name === pictureName);
+                const picture = mainData.pictures.find(p => p.name === pictureName);
                 $('#edit-original-name').val(picture.name);
                 $('#edit-name').val(picture.name);
                 $('#edit-description').val(picture.description);
@@ -214,15 +214,15 @@
                             } else {
                                 imageUrls.forEach((imageUrl, index) => {
                                     const newPicture = {
-                                        name: `Artwork ${picturesData.pictures.length + index + 1}`,
+                                        name: `Artwork ${mainData.pictures.length + index + 1}`,
                                         description: '',
                                         price: 0,
                                         image: imageUrl,
                                         createdAt: new Date().toISOString()
                                     };
-                                    picturesData.pictures.unshift(newPicture);
+                                    mainData.pictures.unshift(newPicture);
                                 });
-                                updateDataFile(picturesData);
+                                updateDataFile(mainData);
                                 $('#editModal').modal('hide');
                             }
                         })
@@ -238,17 +238,17 @@
                     description: $('#edit-description').val(),
                     price: parseInt($('#edit-price').val(), 10),
                     image: imageUrl,
-                    createdAt: originalName ? picturesData.pictures.find(p => p.name === originalName).createdAt : new Date().toISOString()
+                    createdAt: originalName ? mainData.pictures.find(p => p.name === originalName).createdAt : new Date().toISOString()
                 };
 
                 if (originalName) {
-                    const pictureIndex = picturesData.pictures.findIndex(p => p.name === originalName);
-                    picturesData.pictures[pictureIndex] = updatedPicture;
+                    const pictureIndex = mainData.pictures.findIndex(p => p.name === originalName);
+                    mainData.pictures[pictureIndex] = updatedPicture;
                 } else {
-                    picturesData.pictures.unshift(updatedPicture);
+                    mainData.pictures.unshift(updatedPicture);
                 }
 
-                updateDataFile(picturesData);
+                updateDataFile(mainData);
                 $('#editModal').modal('hide');
             }
 
@@ -263,11 +263,11 @@
             });
 
             $('#import-btn').on('click', function() {
-                let token = localStorage.getItem('YOUR_APIFY_TOKEN');
+                let token = localStorage.getItem('apify-pass');
                 if (!token) {
                     token = prompt('Please enter your Apify token:');
                     if (token) {
-                        localStorage.setItem('YOUR_APIFY_TOKEN', token);
+                        localStorage.setItem('apify-pass', token);
                     } else {
                         alert('Apify token is required for import.');
                         return;
@@ -288,10 +288,10 @@
                     },
                     data: JSON.stringify(data),
                     success: function(data) {
-                        picturesData.timestamp = new Date().toISOString();
+                        mainData.timestamp = new Date().toISOString();
                         if (data && data.length > 0 && data[0].latestPosts) {
                             const newPictures = data[0].latestPosts.map(item => ({
-                                name: item.caption ? item.caption.split('\n')[0] : `Artwork ${picturesData.pictures.length + 1}`,
+                                name: item.caption ? item.caption.split('\n')[0] : `Artwork ${mainData.pictures.length + 1}`,
                                 description: item.caption || '',
                                 price: 0,
                                 image: item.displayUrl,
@@ -299,8 +299,8 @@
                                 timestamp: new Date().toISOString()
                             }));
 
-                            picturesData.pictures.unshift(...newPictures);
-                            updateDataFile(picturesData);
+                            mainData.pictures.unshift(...newPictures);
+                            updateDataFile(mainData);
                         } else {
                             alert('No new pictures found.');
                         }
@@ -321,7 +321,7 @@
             $('#sell-form').on('submit', function(e) {
                 e.preventDefault();
                 const pictureName = $('#sell-picture-name').val();
-                const picture = picturesData.pictures.find(p => p.name === pictureName);
+                const picture = mainData.pictures.find(p => p.name === pictureName);
                 const order = {
                     picture: pictureName,
                     customer: $('#sell-customer').val(),
@@ -329,12 +329,12 @@
                     date: $('#sell-date').val(),
                     soldAt: new Date().toISOString()
                 };
-                if (!picturesData.orders) {
-                    picturesData.orders = [];
+                if (!mainData.orders) {
+                    mainData.orders = [];
                 }
-                picturesData.orders.push(order);
-                picturesData.pictures = picturesData.pictures.filter(p => p.name !== pictureName);
-                updateDataFile(picturesData);
+                mainData.orders.push(order);
+                mainData.pictures = mainData.pictures.filter(p => p.name !== pictureName);
+                updateDataFile(mainData);
                 $('#sellModal').modal('hide');
             });
 
@@ -359,7 +359,7 @@
                         },
                         data: JSON.stringify({
                             message: `Update data.json`,
-                            content: btoa(JSON.stringify(data, null, 4)),
+                            content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 4)))),
                             sha: response.sha
                         }),
                         success: function() {
