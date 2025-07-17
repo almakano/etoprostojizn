@@ -40,6 +40,7 @@
                             </a>
                         </li>
                     </ul>
+                    <div class="theme-toggler mt-auto p-3">🌙</div>
                 </div>
             </nav>
 
@@ -52,7 +53,6 @@
                             Import IG
                         </button>
                         <button class="btn btn-sm btn-outline-secondary" id="upload-btn">Upload</button>
-                        <div class="theme-toggler ms-3">🌙</div>
                     </div>
                 </div>
 
@@ -218,7 +218,7 @@
                             </div>
                         `;
                     } else {
-                        pictureHtml = `<img src="${pic.image}" class="card-img-top" alt="${pic.alt || pic.name}" crossorigin="anonymous">`;
+                        pictureHtml = `<img src="${pic.image}" class="card-img-top" alt="${pic.alt || pic.name}">`;
                     }
 
                     const pictureCard = `
@@ -226,7 +226,6 @@
                             <div class="card position-relative">
                                 ${pictureHtml}
                                 <div class="card-body">
-                                    <h5 class="card-title">${pic.name}</h5>
                                     <p class="card-text">${pic.description}</p>
                                 </div>
                                 <div class="position-absolute top-0 end-0 p-2">
@@ -238,8 +237,8 @@
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" aria-labelledby="dropdownMenuButton">
                                             <li><a class="dropdown-item edit-btn" href="#" data-name="${pic.name}">Edit</a></li>
-                                            <li><a class="dropdown-item delete-btn bg-danger" href="#" data-name="${pic.name}">Delete</a></li>
                                             <li><a class="dropdown-item sell-btn" href="#" data-name="${pic.name}">Sell to</a></li>
+                                            <li><a class="dropdown-item delete-btn bg-danger" href="#" data-name="${pic.name}">Delete</a></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -397,6 +396,7 @@
                                     description: item.caption || '',
                                     price: 0,
                                     image: item.displayUrl,
+                                    alt: item.accessibilityCaption,
                                     createdAt: new Date(item.timestamp).toISOString(),
                                     timestamp: new Date().toISOString(),
                                     childPosts: item.childPosts || []
