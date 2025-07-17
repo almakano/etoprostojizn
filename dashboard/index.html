@@ -12,7 +12,7 @@
 
     <div class="container-fluid">
         <div class="row">
-            <nav class="col-md-2 d-none d-md-block sidebar">
+            <nav id="sidebar" class="col-md-2 d-none d-md-block sidebar offcanvas-md offcanvas-start">
                 <div class="position-sticky pt-3">
                     <ul class="nav flex-column">
                         <li class="nav-item">
@@ -45,9 +45,17 @@
 
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <button class="btn btn-secondary d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar" aria-controls="sidebar">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
+                        </svg>
+                    </button>
                     <h1 class="h2">Dashboard</h1>
                     <div class="btn-toolbar mb-2 mb-md-0">
-                        <button class="btn btn-sm btn-outline-secondary" id="import-btn">Import IG</button>
+                        <button class="btn btn-sm btn-outline-secondary me-2" id="import-btn">
+                            <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                            Import IG
+                        </button>
                         <button class="btn btn-sm btn-outline-secondary" id="upload-btn">Upload</button>
                         <div class="theme-toggler ms-3">🌙</div>
                     </div>
@@ -63,7 +71,7 @@
     <!-- Edit Modal -->
     <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <div class="modal-content bg-dark text-white">
+            <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="editModalLabel">Edit Picture</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -101,7 +109,7 @@
     <!-- Sell Modal -->
     <div class="modal fade" id="sellModal" tabindex="-1" aria-labelledby="sellModalLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <div class="modal-content bg-dark text-white">
+            <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="sellModalLabel">Sell Picture</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -132,6 +140,29 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script>
         $(document).ready(function() {
+            let touchstartX = 0;
+            let touchendX = 0;
+
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOffcanvas = new bootstrap.Offcanvas(sidebar);
+
+            function handleGesture() {
+                if (touchendX < touchstartX && touchstartX - touchendX > 50) {
+                    sidebarOffcanvas.hide();
+                }
+                if (touchendX > touchstartX && touchendX - touchstartX > 50) {
+                    sidebarOffcanvas.show();
+                }
+            }
+
+            document.addEventListener('touchstart', e => {
+                touchstartX = e.changedTouches[0].screenX;
+            });
+
+            document.addEventListener('touchend', e => {
+                touchendX = e.changedTouches[0].screenX;
+                handleGesture();
+            });
             // Theme switcher
             function applyTheme(theme) {
                 if (theme === 'dark') {
@@ -205,7 +236,7 @@
                                 </div>
                                 <div class="position-absolute top-0 end-0 p-2">
                                     <div class="dropdown">
-                                        <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <button class="btn btn-secondary btn-sm" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
                                                 <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
                                             </svg>
@@ -326,6 +357,9 @@
             });
 
             $('#import-btn').on('click', function() {
+                const importBtn = $(this);
+                const spinner = importBtn.find('.spinner-border');
+
                 let token = localStorage.getItem('apify-pass');
                 if (!token) {
                     token = prompt('Please enter your Apify token:');
@@ -336,6 +370,9 @@
                         return;
                     }
                 }
+
+                importBtn.prop('disabled', true);
+                spinner.removeClass('d-none');
 
                 const url = "https://api.apify.com/v2/acts/apify~instagram-profile-scraper/run-sync-get-dataset-items";
                 const data = {
@@ -382,6 +419,10 @@
                     },
                     error: function() {
                         alert('Error importing from Instagram!');
+                    },
+                    complete: function() {
+                        importBtn.prop('disabled', false);
+                        spinner.addClass('d-none');
                     }
                 });
             });

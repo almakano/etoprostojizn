@@ -36,3 +36,11 @@ body.dark-mode .card {
     background-color: #212529;
     color: #ffffff;
 }
+.modal-content {
+    background-color: #ffffff;
+    color: #212529;
+}
+body.dark-mode .modal-content {
+    background-color: #212529;
+    color: #ffffff;
+}
