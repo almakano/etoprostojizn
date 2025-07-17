@@ -125,7 +125,7 @@
 
             let picturesData;
 
-            $.getJSON('../data.json', function(data) {
+            $.getJSON(`../data.json?t=${new Date().getTime()}`, function(data) {
                 picturesData = data;
                 renderPictures(picturesData.pictures);
             });
@@ -263,16 +263,29 @@
             });
 
             $('#import-btn').on('click', function() {
+                let token = localStorage.getItem('YOUR_APIFY_TOKEN');
+                if (!token) {
+                    token = prompt('Please enter your Apify token:');
+                    if (token) {
+                        localStorage.setItem('YOUR_APIFY_TOKEN', token);
+                    } else {
+                        alert('Apify token is required for import.');
+                        return;
+                    }
+                }
+
                 const url = 'https://www.instagram.com/tkach2t';
-                const downloaderUrl = `https://api.apify.com/v2/acts/apify/instagram-profile-scraper/run-sync-get-dataset-items?token=YOUR_APIFY_TOKEN&profileUrls=${url}`;
+                const downloaderUrl = `https://api.apify.com/v2/acts/apify/instagram-profile-scraper/run-sync-get-dataset-items?token=${token}&profileUrls=${url}`;
 
                 $.getJSON(downloaderUrl, function(data) {
+                    picturesData.timestamp = new Date().toISOString();
                     const newPictures = data.map(item => ({
                         name: item.caption ? item.caption.split('\n')[0] : `Artwork ${picturesData.pictures.length + 1}`,
                         description: item.caption || '',
                         price: 0,
                         image: item.displayUrl,
-                        createdAt: new Date(item.timestamp).toISOString()
+                        createdAt: new Date(item.timestamp).toISOString(),
+                        timestamp: new Date().toISOString()
                     }));
 
                     picturesData.pictures.unshift(...newPictures);
