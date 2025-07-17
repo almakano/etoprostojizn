@@ -34,6 +34,7 @@
             </a>
         </div>
         <div>
+            <button class="btn btn-info" id="import-btn">Import</button>
             <a href="/dashboard/settings" class="btn btn-secondary">Settings</a>
             <a href="/dashboard/orders" class="btn btn-secondary">Orders</a>
             <button class="btn btn-primary" id="upload-btn">Upload</button>
@@ -70,9 +71,12 @@
                             <input type="number" class="form-control" id="edit-price" required>
                         </div>
                         <div class="mb-3">
-                            <label for="edit-image" class="form-label">Image</label>
-                            <input type="file" class="form-control" id="edit-image-file">
-                            <input type="hidden" id="edit-image">
+                            <label for="edit-image-file" class="form-label">Image from file</label>
+                            <input type="file" class="form-control" id="edit-image-file" multiple>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit-image" class="form-label">Image from URL</label>
+                            <input type="text" class="form-control" id="edit-image">
                         </div>
                         <button type="submit" class="btn btn-primary">Save changes</button>
                     </form>
@@ -181,20 +185,48 @@
             $('#edit-form').on('submit', function(e) {
                 e.preventDefault();
                 const originalName = $('#edit-original-name').val();
-                const imageFile = $('#edit-image-file')[0].files[0];
+                const imageFiles = $('#edit-image-file')[0].files;
 
-                if (imageFile) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const content = e.target.result.split(',')[1];
-                        uploadFile(imageFile.name, content)
-                            .then(response => {
-                                const imageUrl = response.content.download_url;
-                                savePicture(originalName, imageUrl);
-                            })
-                            .catch(() => alert('Error uploading image!'));
-                    };
-                    reader.readAsDataURL(imageFile);
+                if (imageFiles.length > 0) {
+                    const uploadPromises = [];
+                    for (const imageFile of imageFiles) {
+                        const reader = new FileReader();
+                        const promise = new Promise((resolve, reject) => {
+                            reader.onload = function(e) {
+                                const content = e.target.result.split(',')[1];
+                                resolve({ name: imageFile.name, content: content });
+                            };
+                            reader.onerror = reject;
+                            reader.readAsDataURL(imageFile);
+                        });
+                        uploadPromises.push(promise);
+                    }
+
+                    Promise.all(uploadPromises)
+                        .then(files => {
+                            const uploadFilePromises = files.map(file => uploadFile(file.name, file.content));
+                            return Promise.all(uploadFilePromises);
+                        })
+                        .then(responses => {
+                            const imageUrls = responses.map(response => `/upload/${response.content.name}`);
+                            if (originalName) {
+                                savePicture(originalName, imageUrls[0]);
+                            } else {
+                                imageUrls.forEach((imageUrl, index) => {
+                                    const newPicture = {
+                                        name: `Artwork ${picturesData.pictures.length + index + 1}`,
+                                        description: '',
+                                        price: 0,
+                                        image: imageUrl,
+                                        createdAt: new Date().toISOString()
+                                    };
+                                    picturesData.pictures.unshift(newPicture);
+                                });
+                                updateDataFile(picturesData);
+                                $('#editModal').modal('hide');
+                            }
+                        })
+                        .catch(() => alert('Error uploading images!'));
                 } else {
                     savePicture(originalName, $('#edit-image').val());
                 }
@@ -228,6 +260,26 @@
                 $('#edit-image').val('');
                 $('#editModalLabel').text('Upload Picture');
                 $('#editModal').modal('show');
+            });
+
+            $('#import-btn').on('click', function() {
+                const url = 'https://www.instagram.com/tkach2t';
+                const downloaderUrl = `https://api.apify.com/v2/acts/apify/instagram-profile-scraper/run-sync-get-dataset-items?token=YOUR_APIFY_TOKEN&profileUrls=${url}`;
+
+                $.getJSON(downloaderUrl, function(data) {
+                    const newPictures = data.map(item => ({
+                        name: item.caption ? item.caption.split('\n')[0] : `Artwork ${picturesData.pictures.length + 1}`,
+                        description: item.caption || '',
+                        price: 0,
+                        image: item.displayUrl,
+                        createdAt: new Date(item.timestamp).toISOString()
+                    }));
+
+                    picturesData.pictures.unshift(...newPictures);
+                    updateDataFile(picturesData);
+                }).fail(function() {
+                    alert('Error importing from Instagram!');
+                });
             });
 
             $(document).on('click', '.sell-btn', function(e) {
