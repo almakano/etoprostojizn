@@ -94,17 +94,30 @@
                     const pictureCard = `
                         <div class="col-md-4 mb-4">
                             <div class="card">
-                                <img src="${imageUrl}" class="card-img-top" alt="${pic.name}" crossorigin="anonymous">
+                                <img data-src="${imageUrl}" class="card-img-top lazy" alt="${pic.name}" crossorigin="anonymous">
                                 <div class="card-body">
                                     <p class="card-text">${pic.description}</p>
-                                    <a href="${donationLink}" class="btn btn-primary">${pic.price} UAH</a>
+                                    <a href="${donationLink}" class="btn btn-primary ${pic.sold ? 'disabled' : ''}">${pic.price} UAH ${pic.sold ? 'Sold' : ''}</a>
                                 </div>
                             </div>
                         </div>
                     `;
                     picturesGrid.append(pictureCard);
                 });
+                lazyLoad();
             });
+
+            function lazyLoad() {
+                const lazyImages = $('.lazy');
+                lazyImages.each(function() {
+                    const $this = $(this);
+                    if ($this.offset().top < (window.innerHeight + window.scrollY) * 3) {
+                        $this.attr('src', $this.data('src')).removeClass('lazy');
+                    }
+                });
+            }
+
+            $(window).on('scroll', lazyLoad);
         });
     </script>
 </body>
