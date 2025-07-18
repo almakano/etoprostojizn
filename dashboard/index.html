@@ -218,19 +218,19 @@
                 picturesGrid.empty();
                 pictures.forEach((pic, index) => {
                     let pictureHtml;
-                    if (pic.childPosts && pic.childPosts.length > 0) {
+                    if (pic.albumImages && pic.albumImages.length > 0) {
                         const carouselId = `carousel-${index}`;
                         let firstImageUrl = pic.image;
                         if (firstImageUrl.includes('cdninstagram.com') || firstImageUrl.includes('fbcdn.net')) {
                             firstImageUrl = `https://proxy.cors.sh/${firstImageUrl}`;
                         }
                         let carouselItems = `<div class="carousel-item active"><img data-src="${firstImageUrl}" class="d-block w-100 lazy" alt="${pic.alt || pic.name}" crossorigin="anonymous"></div>`;
-                        pic.childPosts.forEach(child => {
-                            let childImageUrl = child.displayUrl;
+                        pic.albumImages.forEach(albumImage => {
+                            let childImageUrl = albumImage.image;
                             if (childImageUrl.includes('cdninstagram.com') || childImageUrl.includes('fbcdn.net')) {
                                 childImageUrl = `https://proxy.cors.sh/${childImageUrl}`;
                             }
-                            carouselItems += `<div class="carousel-item"><img data-src="${childImageUrl}" class="d-block w-100 lazy" alt="${child.alt || pic.name}" crossorigin="anonymous"></div>`;
+                            carouselItems += `<div class="carousel-item"><img data-src="${childImageUrl}" class="d-block w-100 lazy" alt="${albumImage.alt || pic.name}" crossorigin="anonymous"></div>`;
                         });
 
                         pictureHtml = `
@@ -462,18 +462,48 @@
 
                                 Promise.all(uploadPromises)
                                     .then(uploadedPictures => {
-                                        const picturesToAdd = uploadedPictures.map(item => ({
-                                            name: item.caption ? item.caption.split('\n')[0] : `Artwork ${mainData.pictures.length + 1}`,
-                                            description: item.caption || '',
-                                            price: 0,
-                                            image: item.image,
-                                            alt: item.alt,
-                                            createdAt: new Date(item.timestamp).toISOString(),
-                                            timestamp: new Date().toISOString(),
-                                            childPosts: item.childPosts || []
-                                        }));
-                                        mainData.pictures.unshift(...picturesToAdd);
-                                        updateDataFile(mainData);
+                                        const albumImagePromises = uploadedPictures.flatMap(item =>
+                                            (item.images || []).map(imageUrl => {
+                                                const fileName = new URL(imageUrl).pathname.split('/').pop();
+                                                return fetch(`https://proxy.cors.sh/${imageUrl}`)
+                                                    .then(response => {
+                                                        if (!response.ok) {
+                                                            throw new Error('Proxy fetch failed');
+                                                        }
+                                                        return response.blob();
+                                                    })
+                                                    .then(blob => {
+                                                        return new Promise((resolve, reject) => {
+                                                            const reader = new FileReader();
+                                                            reader.onloadend = () => {
+                                                                const base64data = reader.result.split(',')[1];
+                                                                uploadFile(fileName, base64data)
+                                                                    .then(() => {
+                                                                        resolve({ image: `/upload/${fileName}`, alt: item.alt });
+                                                                    })
+                                                                    .catch(reject);
+                                                            };
+                                                            reader.readAsDataURL(blob);
+                                                        });
+                                                    })
+                                                    .catch(() => ({ image: imageUrl, alt: item.alt }));
+                                            })
+                                        );
+
+                                        Promise.all(albumImagePromises).then(albumImages => {
+                                            const picturesToAdd = uploadedPictures.map((item, index) => ({
+                                                name: item.caption ? item.caption.split('\n')[0] : `Artwork ${mainData.pictures.length + 1}`,
+                                                description: item.caption || '',
+                                                price: 0,
+                                                image: item.image,
+                                                alt: item.alt,
+                                                createdAt: new Date(item.timestamp).toISOString(),
+                                                timestamp: new Date().toISOString(),
+                                                albumImages: albumImages.slice(index * (item.images || []).length, (index + 1) * (item.images || []).length)
+                                            }));
+                                            mainData.pictures.unshift(...picturesToAdd);
+                                            updateDataFile(mainData);
+                                        });
                                     })
                                     .catch(() => alert('Error uploading images!'));
                             } else {
@@ -563,14 +593,35 @@
 
                 return $.ajax({
                     url: url,
-                    type: 'PUT',
+                    type: 'GET',
                     headers: {
                         'Authorization': `token ${token}`
-                    },
-                    data: JSON.stringify({
-                        message: `Upload ${name}`,
-                        content: content
-                    })
+                    }
+                }).then(response => {
+                    return $.ajax({
+                        url: url,
+                        type: 'PUT',
+                        headers: {
+                            'Authorization': `token ${token}`
+                        },
+                        data: JSON.stringify({
+                            message: `Upload ${name}`,
+                            content: content,
+                            sha: response.sha
+                        })
+                    });
+                }).catch(() => {
+                    return $.ajax({
+                        url: url,
+                        type: 'PUT',
+                        headers: {
+                            'Authorization': `token ${token}`
+                        },
+                        data: JSON.stringify({
+                            message: `Upload ${name}`,
+                            content: content
+                        })
+                    });
                 });
             }
         });
