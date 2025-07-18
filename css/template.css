@@ -45,8 +45,21 @@ body.dark-mode .header a {
     overflow: hidden;
     transition: height 0.3s ease-in-out;
     cursor: pointer;
+    background-color: #e9ecef;
+}
+
+body.dark-mode .collapsible-header {
+    background-color: #343a40;
 }
 
 .collapsible-header.expanded {
     height: 50px; /* Adjust as needed */
+}
+
+.collapsible-header .social-links {
+    visibility: hidden;
+}
+
+.collapsible-header.expanded .social-links {
+    visibility: visible;
 }

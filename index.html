@@ -10,9 +10,14 @@
 </head>
 <body>
 
-    <header class="header text-center">
-        <div class="logo" style="line-height: 1;">
-            <img src="https://proxy.cors.sh/https://scontent-bos5-1.cdninstagram.com/v/t51.2885-15/497858652_18386543440139616_1099135169888589694_n.jpg?stp=dst-jpegr_e35_tt6&efg=eyJ2ZW5jb2RlX3RhZyI6IkZFRUQuaW1hZ2VfdXJsZ2VuLjE0NDB4MTQ0MC5oZHIuZjc1NzYxLmRlZmF1bHRfaW1hZ2UifQ&_nc_ht=scontent-bos5-1.cdninstagram.com&_nc_cat=100&_nc_oc=Q6cZ2QHh5u0j5znDyHv0f0UqZG4d2QeV1Y2Uk7Zr6owryaIcqplWzUF4I9t6wKZ4M5PBiEc&_nc_ohc=GUxtDQ2LShkQ7kNvwFNQA3E&_nc_gid=mpDTTA1cldksJILiKmUgwA&edm=AP4sbd4BAAAA&ccb=7-5&ig_cache_key=MzYzMzIwMzU2MTcwNjQyNzc0Mw%3D%3D.3-ccb7-5&oh=00_AfQD2PN-hfxuwwMLm24tD2SNF88qR0UXZ4QjheU_Ev4D1A&oe=687DC956&_nc_sid=7a9f4b" alt="Tatiana Tkach" style="height: 40px;" crossorigin="anonymous">
+    <header class="header d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+            <div class="logo" style="line-height: 1;">
+                <img src="https://proxy.cors.sh/https://scontent-bos5-1.cdninstagram.com/v/t51.2885-15/497858652_18386543440139616_1099135169888589694_n.jpg?stp=dst-jpegr_e35_tt6&efg=eyJ2ZW5jb2RlX3RhZyI6IkZFRUQuaW1hZ2VfdXJsZ2VuLjE0NDB4MTQ0MC5oZHIuZjc1NzYxLmRlZmF1bHRfaW1hZ2UifQ&_nc_ht=scontent-bos5-1.cdninstagram.com&_nc_cat=100&_nc_oc=Q6cZ2QHh5u0j5znDyHv0f0UqZG4d2QeV1Y2Uk7Zr6owryaIcqplWzUF4I9t6wKZ4M5PBiEc&_nc_ohc=GUxtDQ2LShkQ7kNvwFNQA3E&_nc_gid=mpDTTA1cldksJILiKmUgwA&edm=AP4sbd4BAAAA&ccb=7-5&ig_cache_key=MzYzMzIwMzU2MTcwNjQyNzc0Mw%3D%3D.3-ccb7-5&oh=00_AfQD2PN-hfxuwwMLm24tD2SNF88qR0UXZ4QjheU_Ev4D1A&oe=687DC956&_nc_sid=7a9f4b" alt="Tatiana Tkach" style="height: 40px;" crossorigin="anonymous">
+            </div>
+            <div class="ms-2" style="line-height: 1.2;">
+                Tatiana<br>Tkach
+            </div>
         </div>
         <div class="collapsible-header">
             <div class="social-links d-flex justify-content-center align-items-center">
@@ -82,13 +87,15 @@
                 const picturesGrid = $('#pictures-grid');
                 const donationLink = data.settings.donation_link;
                 data.pictures.forEach(pic => {
-                    const imageUrl = pic.image.includes('cdninstagram.com') ? `https://proxy.cors.sh/${pic.image}` : pic.image;
+                    let imageUrl = pic.image;
+                    if (imageUrl.includes('cdninstagram.com') || imageUrl.includes('fbcdn.net')) {
+                        imageUrl = `https://proxy.cors.sh/${imageUrl}`;
+                    }
                     const pictureCard = `
                         <div class="col-md-4 mb-4">
                             <div class="card">
                                 <img src="${imageUrl}" class="card-img-top" alt="${pic.name}" crossorigin="anonymous">
                                 <div class="card-body">
-                                    <h5 class="card-title">${pic.name}</h5>
                                     <p class="card-text">${pic.description}</p>
                                     <a href="${donationLink}" class="btn btn-primary">${pic.price} UAH</a>
                                 </div>
