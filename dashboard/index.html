@@ -424,23 +424,58 @@
                     success: function(data) {
                         mainData.timestamp = new Date().toISOString();
                         if (data && data.length > 0 && data[0].latestPosts) {
-                            const existingImagePaths = new Set(mainData.pictures.map(p => new URL(p.image).pathname));
+                            const existingImagePaths = new Set(mainData.pictures.map(p => p.image.split('/').pop()));
                             const newPictures = data[0].latestPosts
-                                .filter(item => !existingImagePaths.has(new URL(item.displayUrl).pathname))
-                                .map(item => ({
-                                    name: item.caption ? item.caption.split('\n')[0] : `Artwork ${mainData.pictures.length + 1}`,
-                                    description: item.caption || '',
-                                    price: 0,
-                                    image: item.displayUrl,
-                                    alt: item.alt,
-                                    createdAt: new Date(item.timestamp).toISOString(),
-                                    timestamp: new Date().toISOString(),
-                                    childPosts: item.childPosts || []
-                                }));
+                                .filter(item => !existingImagePaths.has(new URL(item.displayUrl).pathname.split('/').pop()));
 
                             if (newPictures.length > 0) {
-                                mainData.pictures.unshift(...newPictures);
-                                updateDataFile(mainData);
+                                const uploadPromises = newPictures.map(item => {
+                                    const imageUrl = item.displayUrl;
+                                    const fileName = new URL(imageUrl).pathname.split('/').pop();
+                                    return fetch(`https://proxy.cors.sh/${imageUrl}`)
+                                        .then(response => {
+                                            if (!response.ok) {
+                                                throw new Error('Proxy fetch failed');
+                                            }
+                                            return response.blob();
+                                        })
+                                        .then(blob => {
+                                            return new Promise((resolve, reject) => {
+                                                const reader = new FileReader();
+                                                reader.onloadend = () => {
+                                                    const base64data = reader.result.split(',')[1];
+                                                    uploadFile(fileName, base64data)
+                                                        .then(() => {
+                                                            item.image = `/upload/${fileName}`;
+                                                            resolve(item);
+                                                        })
+                                                        .catch(reject);
+                                                };
+                                                reader.readAsDataURL(blob);
+                                            });
+                                        })
+                                        .catch(() => {
+                                            item.image = imageUrl;
+                                            return item;
+                                        });
+                                });
+
+                                Promise.all(uploadPromises)
+                                    .then(uploadedPictures => {
+                                        const picturesToAdd = uploadedPictures.map(item => ({
+                                            name: item.caption ? item.caption.split('\n')[0] : `Artwork ${mainData.pictures.length + 1}`,
+                                            description: item.caption || '',
+                                            price: 0,
+                                            image: item.image,
+                                            alt: item.alt,
+                                            createdAt: new Date(item.timestamp).toISOString(),
+                                            timestamp: new Date().toISOString(),
+                                            childPosts: item.childPosts || []
+                                        }));
+                                        mainData.pictures.unshift(...picturesToAdd);
+                                        updateDataFile(mainData);
+                                    })
+                                    .catch(() => alert('Error uploading images!'));
                             } else {
                                 alert('No new pictures found.');
                             }
