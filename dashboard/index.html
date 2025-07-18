@@ -205,9 +205,11 @@
                     let pictureHtml;
                     if (pic.childPosts && pic.childPosts.length > 0) {
                         const carouselId = `carousel-${index}`;
-                        let carouselItems = `<div class="carousel-item active"><img src="${pic.image}" class="d-block w-100" alt="${pic.alt || pic.name}"></div>`;
+                        const firstImageUrl = pic.image.includes('cdninstagram.com') ? `https://proxy.cors.sh/${pic.image}` : pic.image;
+                        let carouselItems = `<div class="carousel-item active"><img src="${firstImageUrl}" class="d-block w-100" alt="${pic.alt || pic.name}" crossorigin="anonymous"></div>`;
                         pic.childPosts.forEach(child => {
-                            carouselItems += `<div class="carousel-item"><img src="${child.displayUrl}" class="d-block w-100" alt="${child.alt || pic.name}"></div>`;
+                            const childImageUrl = child.displayUrl.includes('cdninstagram.com') ? `https://proxy.cors.sh/${child.displayUrl}` : child.displayUrl;
+                            carouselItems += `<div class="carousel-item"><img src="${childImageUrl}" class="d-block w-100" alt="${child.alt || pic.name}" crossorigin="anonymous"></div>`;
                         });
 
                         pictureHtml = `
@@ -226,7 +228,8 @@
                             </div>
                         `;
                     } else {
-                        pictureHtml = `<img src="${pic.image}" class="card-img-top" alt="${pic.alt || pic.name}">`;
+                        const imageUrl = pic.image.includes('cdninstagram.com') ? `https://proxy.cors.sh/${pic.image}` : pic.image;
+                        pictureHtml = `<img src="${imageUrl}" class="card-img-top" alt="${pic.alt || pic.name}" crossorigin="anonymous">`;
                     }
 
                     const pictureCard = `
