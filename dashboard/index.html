@@ -143,29 +143,31 @@
             const sidebar = document.getElementById('sidebar');
             const sidebarOffcanvas = new bootstrap.Offcanvas(sidebar);
 
-            function handleGesture() {
-                if (touchendX < touchstartX && touchstartX - touchendX > 50) {
-                    sidebarOffcanvas.hide();
+            if (window.innerWidth < 768) {
+                function handleGesture() {
+                    if (touchendX < touchstartX && touchstartX - touchendX > 50) {
+                        sidebarOffcanvas.hide();
+                    }
+                    if (touchendX > touchstartX && touchendX - touchstartX > 50) {
+                        sidebarOffcanvas.show();
+                    }
                 }
-                if (touchendX > touchstartX && touchendX - touchstartX > 50) {
-                    sidebarOffcanvas.show();
-                }
+
+                document.addEventListener('touchstart', e => {
+                    touchstartX = e.changedTouches[0].screenX;
+                });
+
+                document.addEventListener('touchend', e => {
+                    touchendX = e.changedTouches[0].screenX;
+                    handleGesture();
+                });
+
+                sidebar.addEventListener('click', () => {
+                    if (!sidebar.classList.contains('show')) {
+                        sidebarOffcanvas.show();
+                    }
+                });
             }
-
-            document.addEventListener('touchstart', e => {
-                touchstartX = e.changedTouches[0].screenX;
-            });
-
-            document.addEventListener('touchend', e => {
-                touchendX = e.changedTouches[0].screenX;
-                handleGesture();
-            });
-
-            sidebar.addEventListener('click', () => {
-                if (!sidebar.classList.contains('show')) {
-                    sidebarOffcanvas.show();
-                }
-            });
             // Theme switcher
             function applyTheme(theme) {
                 if (theme === 'dark') {
@@ -255,7 +257,7 @@
                     }
 
                     const pictureCard = `
-                        <div class="col-md-4 mb-4 d-flex align-items-stretch">
+                        <div class="col-md-6 col-lg-4 mb-4 d-flex align-items-stretch">
                             <div class="card w-100 position-relative">
                                 ${pictureHtml}
                                 <div class="card-body">
