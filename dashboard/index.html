@@ -422,9 +422,9 @@
                     success: function(data) {
                         mainData.timestamp = new Date().toISOString();
                         if (data && data.length > 0 && data[0].latestPosts) {
-                            const existingImages = new Set(mainData.pictures.map(p => p.image));
+                            const existingImagePaths = new Set(mainData.pictures.map(p => new URL(p.image).pathname));
                             const newPictures = data[0].latestPosts
-                                .filter(item => !existingImages.has(item.displayUrl))
+                                .filter(item => !existingImagePaths.has(new URL(item.displayUrl).pathname))
                                 .map(item => ({
                                     name: item.caption ? item.caption.split('\n')[0] : `Artwork ${mainData.pictures.length + 1}`,
                                     description: item.caption || '',
