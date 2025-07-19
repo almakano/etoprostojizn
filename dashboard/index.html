@@ -279,8 +279,7 @@
                                 <div class="card-body d-flex flex-column">
                                     <p class="card-text">${pic.description}</p>
                                     <div class="mt-auto d-flex justify-content-end">
-                                        ${isDashboard ? donationButton.replace('a href', 'button') : donationButton}
-                                        ${isDashboard ? actionsDropdown : ''}
+                                        ${isDashboard ? donationButton.replace('a href', 'button') + actionsDropdown : donationButton}
                                     </div>
                                 </div>
                             </div>
