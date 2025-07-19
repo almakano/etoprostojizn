@@ -197,7 +197,7 @@
 
             $.getJSON(`../data.json?t=${new Date().getTime()}`, function(data) {
                 mainData = data;
-                renderPictures(mainData.pictures);
+                renderPictures(mainData.pictures, true);
                 lazyLoad();
             });
 
@@ -213,7 +213,7 @@
 
             $(window).on('scroll', lazyLoad);
 
-            function renderPictures(pictures) {
+            function renderPictures(pictures, isDashboard) {
                 const picturesGrid = $('#pictures-grid');
                 picturesGrid.empty();
                 pictures.forEach((pic, index) => {
@@ -224,13 +224,13 @@
                         if (firstImageUrl.includes('cdninstagram.com') || firstImageUrl.includes('fbcdn.net')) {
                             firstImageUrl = `https://proxy.cors.sh/${firstImageUrl}`;
                         }
-                        let carouselItems = `<div class="carousel-item active"><img data-src="${firstImageUrl}" class="d-block w-100 lazy" alt="${pic.alt || pic.name}" crossorigin="anonymous"></div>`;
-                        pic.albumImages.forEach(albumImage => {
-                            let childImageUrl = albumImage.image;
+                        let carouselItems = `<div class="carousel-item active"><img data-src="${firstImageUrl}" class="d-block w-100 lazy" alt="${pic.alt}" crossorigin="anonymous"></div>`;
+                        pic.albumImages.forEach(imageUrl => {
+                            let childImageUrl = imageUrl;
                             if (childImageUrl.includes('cdninstagram.com') || childImageUrl.includes('fbcdn.net')) {
                                 childImageUrl = `https://proxy.cors.sh/${childImageUrl}`;
                             }
-                            carouselItems += `<div class="carousel-item"><img data-src="${childImageUrl}" class="d-block w-100 lazy" alt="${albumImage.alt || pic.name}" crossorigin="anonymous"></div>`;
+                            carouselItems += `<div class="carousel-item"><img data-src="${childImageUrl}" class="d-block w-100 lazy" alt="${pic.alt}" crossorigin="anonymous"></div>`;
                         });
 
                         pictureHtml = `
@@ -253,8 +253,24 @@
                         if (imageUrl.includes('cdninstagram.com') || imageUrl.includes('fbcdn.net')) {
                             imageUrl = `https://proxy.cors.sh/${imageUrl}`;
                         }
-                        pictureHtml = `<img data-src="${imageUrl}" class="card-img-top lazy" alt="${pic.alt || pic.name}" crossorigin="anonymous">`;
+                        pictureHtml = `<img data-src="${imageUrl}" class="card-img-top lazy" alt="${pic.alt}" crossorigin="anonymous">`;
                     }
+
+                    const donationButton = `<a href="${mainData.settings.donation_link}" class="btn btn-outline-primary ${pic.sold ? 'disabled' : ''} ${pic.price === 0 ? 'd-none' : ''}">${pic.price} UAH ${pic.sold ? 'Sold' : ''}</a>`;
+                    const actionsDropdown = `
+                        <div class="dropdown ms-2 d-inline-block">
+                            <button class="btn btn-secondary btn-sm" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
+                                    <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
+                                </svg>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" aria-labelledby="dropdownMenuButton">
+                                <li><a class="dropdown-item edit-btn" href="#" data-image="${pic.image}">Edit</a></li>
+                                <li><a class="dropdown-item sell-btn" href="#" data-image="${pic.image}">Sell to</a></li>
+                                <li><a class="dropdown-item delete-btn bg-danger" href="#" data-image="${pic.image}">Delete</a></li>
+                            </ul>
+                        </div>
+                    `;
 
                     const pictureCard = `
                         <div class="col-md-6 col-lg-4 mb-4 d-flex align-items-stretch">
@@ -262,22 +278,11 @@
                                 ${pictureHtml}
                                 <div class="card-body d-flex flex-column">
                                     <p class="card-text">${pic.description}</p>
-                                    <div class="position-absolute top-0 end-0 m-2">
-                                        <button class="btn btn-outline-primary ${pic.price === 0 ? 'd-none' : ''}" ${pic.sold ? 'disabled' : ''}>
-                                            ${pic.price} UAH ${pic.sold ? 'Sold' : ''}
-                                        </button>
-                                        <div class="dropdown ms-2 d-inline-block">
-                                            <button class="btn btn-secondary btn-sm" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
-                                                    <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
-                                                </svg>
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" aria-labelledby="dropdownMenuButton">
-                                                <li><a class="dropdown-item edit-btn" href="#" data-name="${pic.name}">Edit</a></li>
-                                                <li><a class="dropdown-item sell-btn" href="#" data-name="${pic.name}">Sell to</a></li>
-                                                <li><a class="dropdown-item delete-btn bg-danger" href="#" data-name="${pic.name}">Delete</a></li>
-                                            </ul>
-                                        </div>
+                                    <div class="mt-auto d-flex justify-content-end">
+                                        ${isDashboard ? donationButton.replace('a href', 'button') : donationButton}
+                                        ${isDashboard ? actionsDropdown : ''}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     `;
@@ -287,28 +292,28 @@
 
             $(document).on('click', '.delete-btn', function(e) {
                 e.preventDefault();
-                const pictureName = $(this).data('name');
-                if (confirm(`Are you sure you want to delete "${pictureName}"?`)) {
-                    mainData.pictures = mainData.pictures.filter(p => p.name !== pictureName);
+                const imageUrl = $(this).data('image');
+                if (confirm(`Are you sure you want to delete this picture?`)) {
+                    mainData.pictures = mainData.pictures.filter(p => p.image !== imageUrl);
                     updateDataFile(mainData);
                 }
             });
 
             $(document).on('click', '.edit-btn', function(e) {
                 e.preventDefault();
-                const pictureName = $(this).data('name');
-                const picture = mainData.pictures.find(p => p.name === pictureName);
-                $('#edit-original-name').val(picture.name);
-                $('#edit-name').val(picture.name);
+                const imageUrl = $(this).data('image');
+                const picture = mainData.pictures.find(p => p.image === imageUrl);
+                $('#edit-original-image').val(picture.image);
                 $('#edit-description').val(picture.description);
                 $('#edit-price').val(picture.price);
                 $('#edit-image').val(picture.image);
+                $('#edit-alt').val(picture.alt);
                 $('#editModal').modal('show');
             });
 
             $('#edit-form').on('submit', function(e) {
                 e.preventDefault();
-                const originalName = $('#edit-original-name').val();
+                const originalImage = $('#edit-original-image').val();
                 const imageFiles = $('#edit-image-file')[0].files;
 
                 if (imageFiles.length > 0) {
@@ -333,15 +338,16 @@
                         })
                         .then(responses => {
                             const imageUrls = responses.map(response => `/upload/${response.content.name}`);
-                            if (originalName) {
-                                savePicture(originalName, imageUrls[0]);
+                            if (originalImage) {
+                                savePicture(originalImage, imageUrls[0]);
                             } else {
                                 imageUrls.forEach((imageUrl, index) => {
                                     const newPicture = {
-                                        name: `Artwork ${mainData.pictures.length + index + 1}`,
                                         description: '',
                                         price: 0,
                                         image: imageUrl,
+                                        alt: '',
+                                        albumImages: [],
                                         createdAt: new Date().toISOString()
                                     };
                                     mainData.pictures.unshift(newPicture);
@@ -352,21 +358,22 @@
                         })
                         .catch(() => alert('Error uploading images!'));
                 } else {
-                    savePicture(originalName, $('#edit-image').val());
+                    savePicture(originalImage, $('#edit-image').val());
                 }
             });
 
-            function savePicture(originalName, imageUrl) {
+            function savePicture(originalImage, imageUrl) {
                 const updatedPicture = {
-                    name: $('#edit-name').val(),
                     description: $('#edit-description').val(),
                     price: parseInt($('#edit-price').val(), 10),
                     image: imageUrl,
-                    createdAt: originalName ? mainData.pictures.find(p => p.name === originalName).createdAt : new Date().toISOString()
+                    alt: $('#edit-alt').val(),
+                    albumImages: originalImage ? mainData.pictures.find(p => p.image === originalImage).albumImages : [],
+                    createdAt: originalImage ? mainData.pictures.find(p => p.image === originalImage).createdAt : new Date().toISOString()
                 };
 
-                if (originalName) {
-                    const pictureIndex = mainData.pictures.findIndex(p => p.name === originalName);
+                if (originalImage) {
+                    const pictureIndex = mainData.pictures.findIndex(p => p.image === originalImage);
                     mainData.pictures[pictureIndex] = updatedPicture;
                 } else {
                     mainData.pictures.unshift(updatedPicture);
@@ -377,19 +384,16 @@
             }
 
             $('#upload-btn').on('click', function() {
-                $('#edit-original-name').val('');
-                $('#edit-name').val('');
+                $('#edit-original-image').val('');
                 $('#edit-description').val('');
                 $('#edit-price').val('');
                 $('#edit-image').val('');
+                $('#edit-alt').val('');
                 $('#editModalLabel').text('Upload Picture');
                 $('#editModal').modal('show');
             });
 
             $('#import-btn').on('click', function() {
-                const importBtn = $(this);
-                const spinner = importBtn.find('.spinner-border');
-
                 let token = localStorage.getItem('apify-pass');
                 if (!token) {
                     token = prompt('Please enter your Apify token:');
@@ -400,6 +404,10 @@
                         return;
                     }
                 }
+                const importBtn = $(this);
+                const spinner = importBtn.find('.spinner-border');
+
+
 
                 importBtn.prop('disabled', true);
                 spinner.removeClass('d-none');
@@ -492,7 +500,6 @@
 
                                         Promise.all(albumImagePromises).then(albumImages => {
                                             const picturesToAdd = uploadedPictures.map((item, index) => ({
-                                                name: item.caption ? item.caption.split('\n')[0] : `Artwork ${mainData.pictures.length + 1}`,
                                                 description: item.caption || '',
                                                 price: 0,
                                                 image: item.image,
@@ -525,17 +532,17 @@
 
             $(document).on('click', '.sell-btn', function(e) {
                 e.preventDefault();
-                const pictureName = $(this).data('name');
-                $('#sell-picture-name').val(pictureName);
+                const imageUrl = $(this).data('image');
+                $('#sell-picture-image').val(imageUrl);
                 $('#sellModal').modal('show');
             });
 
             $('#sell-form').on('submit', function(e) {
                 e.preventDefault();
-                const pictureName = $('#sell-picture-name').val();
-                const picture = mainData.pictures.find(p => p.name === pictureName);
+                const imageUrl = $('#sell-picture-image').val();
+                const picture = mainData.pictures.find(p => p.image === imageUrl);
                 const order = {
-                    picture: pictureName,
+                    picture: picture.image,
                     customer: $('#sell-customer').val(),
                     price: parseInt($('#sell-price').val(), 10),
                     date: $('#sell-date').val(),
@@ -545,13 +552,22 @@
                     mainData.orders = [];
                 }
                 mainData.orders.push(order);
-                mainData.pictures = mainData.pictures.filter(p => p.name !== pictureName);
+                mainData.pictures = mainData.pictures.filter(p => p.image !== imageUrl);
                 updateDataFile(mainData);
                 $('#sellModal').modal('hide');
             });
 
             function updateDataFile(data) {
-                const token = localStorage.getItem('github-pass');
+                let token = localStorage.getItem('github-pass');
+                if (!token) {
+                    token = prompt('Please enter your GitHub token:');
+                    if (token) {
+                        localStorage.setItem('github-pass', token);
+                    } else {
+                        alert('GitHub token is required to update data.');
+                        return;
+                    }
+                }
                 const repo = 'almakano/etoprostojizn';
                 const path = 'data.json';
                 const url = `https://api.github.com/repos/${repo}/contents/${path}`;
@@ -576,7 +592,7 @@
                         }),
                         success: function() {
                             alert('Data updated successfully!');
-                            renderPictures(mainData.pictures);
+                            renderPictures(mainData.pictures, true);
                         },
                         error: function() {
                             alert('Error updating data!');
@@ -586,7 +602,16 @@
             }
 
             function uploadFile(name, content) {
-                const token = localStorage.getItem('github-pass');
+                let token = localStorage.getItem('github-pass');
+                if (!token) {
+                    token = prompt('Please enter your GitHub token:');
+                    if (token) {
+                        localStorage.setItem('github-pass', token);
+                    } else {
+                        alert('GitHub token is required to upload files.');
+                        return;
+                    }
+                }
                 const repo = 'almakano/etoprostojizn';
                 const path = `upload/${name}`;
                 const url = `https://api.github.com/repos/${repo}/contents/${path}`;
