@@ -40,26 +40,29 @@ body.dark-mode .header a {
     color: #ffffff;
 }
 
-.collapsible-header {
-    height: 10px;
+.social-container {
+    left: 0;
+    top: 100%;
+}
+
+.social-panel {
+    max-height: 0;
     overflow: hidden;
-    transition: height 0.3s ease-in-out;
-    cursor: pointer;
+    transition: max-height 0.3s ease-in-out;
+}
+
+.social-panel.expanded {
+    max-height: 50px; /* Adjust as needed */
+}
+
+.social-toggle {
+    height: 10px;
+    width: 200px;
+    margin: 0 auto;
     background-color: #e9ecef;
+    cursor: pointer;
 }
 
-body.dark-mode .collapsible-header {
+body.dark-mode .social-toggle {
     background-color: #343a40;
-}
-
-.collapsible-header.expanded {
-    height: 50px; /* Adjust as needed */
-}
-
-.collapsible-header .social-links {
-    visibility: hidden;
-}
-
-.collapsible-header.expanded .social-links {
-    visibility: visible;
 }
