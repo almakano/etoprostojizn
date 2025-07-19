@@ -87,8 +87,10 @@
                 applyTheme(newTheme);
             });
 
+            let mainData;
             // Fetch and display pictures
             $.getJSON(`data.json?t=${new Date().getTime()}`, function(data) {
+                mainData = data;
                 renderPictures(data.pictures, false);
                 lazyLoad();
             });
